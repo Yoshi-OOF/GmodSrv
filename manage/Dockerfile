@@ -12,7 +12,7 @@ RUN chmod +x /gmod/srcds_run
 COPY . /var/www/html
 RUN chown -R www-data:www-data /var/www/html
 
-RUN echo "Hello from GmodSrv" > /var/www/html/index.html
+# RUN echo "Hello from GmodSrv" > /var/www/html/index.html
 
 # Copie du script d'entrée
 COPY docker-entrypoint.sh /docker-entrypoint.sh
