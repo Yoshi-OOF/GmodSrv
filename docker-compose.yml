@@ -1,0 +1,10 @@
+
+version: '3.8'
+services:
+  gmod_server:
+    build:
+      context: .
+      dockerfile: ./manage/Dockerfile
+    ports:
+      - "80:80"
+    container_name: gmod_manager
