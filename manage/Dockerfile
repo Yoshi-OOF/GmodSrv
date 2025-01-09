@@ -9,8 +9,8 @@ COPY ../srv /gmod
 RUN chmod +x /gmod/srcds_run
 
 # Copie du code PHP
-COPY . /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY html /usr/share/nginx/html
+COPY conf/nginx.conf /etc/nginx/nginx.conf
 RUN chown -R www-data:www-data /var/www/html
 
 # RUN echo "Hello from GmodSrv" > /var/www/html/index.html
