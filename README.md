@@ -10,8 +10,8 @@
     ```
 
 ## ou
-docker build -t nginx .
-docker run -d -p 8080:80 nginx
+<!-- docker build -t nginx .
+docker run -d -p 8080:80 nginx -->
 
 ## Installation
 1. Cloner le dépôt.  
