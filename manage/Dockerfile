@@ -9,7 +9,7 @@ COPY ../srv /gmod
 RUN chmod +x /gmod/srcds_run
 
 # Copie du code PHP
-COPY html /var/www/html
+COPY /html /var/www/html
 RUN chown -R www-data:www-data /var/www/html
 
 RUN echo "Hello from GmodSrv" > /var/www/html/index.html
