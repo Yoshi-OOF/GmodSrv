@@ -1,3 +1,4 @@
+
 FROM php:8.2-apache
 
 RUN apt-get update && \
@@ -9,10 +10,8 @@ COPY ../srv /gmod
 RUN chmod +x /gmod/srcds_run
 
 # Copie du code PHP
-COPY site /var/www/html
+COPY . /var/www/html
 RUN chown -R www-data:www-data /var/www/html
-
-RUN echo "Hello from GmodSrv" > /var/www/html/index.html
 
 # Copie du script d'entrée
 COPY docker-entrypoint.sh /docker-entrypoint.sh
