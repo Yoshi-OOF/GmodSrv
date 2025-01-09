@@ -2,7 +2,12 @@
 
 ## Prérequis
 - [Docker](https://docs.docker.com/get-docker/)  
-- [Docker Compose](https://docs.docker.com/compose/install/)
+- [Docker Compose](https://docs.docker.com/compose/install/)  
+- Paquets essentiels pour la construction du serveur (p. ex. build-essential, lib32gcc1) :
+    ```bash
+    sudo apt-get update
+    sudo apt-get install -y build-essential lib32gcc1
+    ```
 
 ## Installation
 1. Cloner le dépôt.  
@@ -10,16 +15,16 @@
 
 ## Utilisation
 1. Construire l’image :  
-    ```bash
-    docker-compose build
-    ```
+        ```bash
+        docker-compose build
+        ```
 2. Démarrer les conteneurs :  
-    ```bash
-    docker-compose up -d
-    ```
+        ```bash
+        docker-compose up -d
+        ```
 3. Arrêter les conteneurs :  
-    ```bash
-    docker-compose down
-    ```
+        ```bash
+        docker-compose down
+        ```
 
 Pour plus de détails ou de personnalisations, modifiez le fichier `docker-compose.yml` selon vos besoins.
