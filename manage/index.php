@@ -1,0 +1,151 @@
+<?php
+// Active l'affichage des erreurs en mode développement (à enlever en production)
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+?>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gmod Server Manager</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        .console {
+            background-color: #1e1e1e;
+            color: #00ff00;
+            font-family: monospace;
+            padding: 15px;
+            height: 400px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body class="bg-dark text-light">
+    <div class="container py-4">
+        <h1 class="mb-4"><i class="fas fa-gamepad"></i> Gmod Server Manager</h1>
+        
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card bg-secondary">
+                    <div class="card-header">
+                        Console Output
+                        <button class="btn btn-sm btn-primary float-end" onclick="refreshConsole()">
+                            <i class="fas fa-sync"></i>
+                        </button>
+                    </div>
+                    <div class="card-body console" id="console"></div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card bg-secondary mb-3">
+                    <div class="card-header">Server Controls</div>
+                    <div class="card-body">
+                        <button class="btn btn-success w-100 mb-2" onclick="controlServer('start')">
+                            <i class="fas fa-play"></i> Start Server
+                        </button>
+                        <button class="btn btn-danger w-100 mb-2" onclick="controlServer('stop')">
+                            <i class="fas fa-stop"></i> Stop Server
+                        </button>
+                        <button class="btn btn-warning w-100" onclick="restartServer()">
+                            <i class="fas fa-sync"></i> Restart Server
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="card bg-secondary">
+                    <div class="card-header">Server Status</div>
+                    <div class="card-body">
+                        <p>Status: <span id="status" class="badge bg-danger">Checking...</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * Envoie une action au fichier server_control.php (start, stop, console, status).
+         */
+        function controlServer(action) {
+            fetch('server_control.php', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: 'action=' + encodeURIComponent(action)
+            })
+            .then(response => response.json())
+            .then(() => {
+                // Après avoir lancé l'action, on met à jour l'état du serveur et la console
+                checkStatus();
+                refreshConsole();
+            })
+            .catch(err => {
+                console.error('Erreur lors du contrôle du serveur :', err);
+            });
+        }
+
+        /**
+         * Redémarre le serveur en envoyant successivement stop puis start.
+         */
+        function restartServer() {
+            controlServer('stop');
+            setTimeout(() => controlServer('start'), 2000);
+        }
+
+        /**
+         * Récupère le contenu de la console via server_control.php.
+         */
+        function refreshConsole() {
+            fetch('server_control.php', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: 'action=console'
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('console').innerHTML = data.console ?? 'No data';
+            })
+            .catch(err => {
+                console.error('Erreur lors de la récupération de la console :', err);
+            });
+        }
+
+        /**
+         * Vérifie si le serveur est en ligne ou hors ligne et met à jour l'affichage.
+         */
+        function checkStatus() {
+            fetch('server_control.php', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: 'action=status'
+            })
+            .then(response => response.json())
+            .then(data => {
+                const statusElement = document.getElementById('status');
+                if (data.running) {
+                    statusElement.classList.remove('bg-danger');
+                    statusElement.classList.add('bg-success');
+                    statusElement.textContent = 'Online';
+                } else {
+                    statusElement.classList.remove('bg-success');
+                    statusElement.classList.add('bg-danger');
+                    statusElement.textContent = 'Offline';
+                }
+            })
+            .catch(err => {
+                console.error('Erreur lors de la vérification du statut :', err);
+            });
+        }
+
+        // Appels initiaux
+        checkStatus();
+        refreshConsole();
+
+        // Mises à jour périodiques
+        setInterval(checkStatus, 5000);
+        setInterval(refreshConsole, 10000);
+    </script>
+</body>
+</html>
