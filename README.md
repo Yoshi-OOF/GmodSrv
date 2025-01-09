@@ -9,6 +9,10 @@
     sudo apt-get install -y build-essential lib32gcc1
     ```
 
+## ou
+docker build -t nginx .
+docker run -d -p 8080:80 nginx
+
 ## Installation
 1. Cloner le dépôt.  
 2. Placer-vous dans le dossier contenant le `docker-compose.yml`.
