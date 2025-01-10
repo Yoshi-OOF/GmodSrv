@@ -10,9 +10,10 @@
     ```
 
 ## ou
-<!-- docker build -t nginx .
-docker run -d -p 8080:80 nginx -->
-
+<!-- ```bash
+docker build -t nginx .
+docker run -d -p 8080:80 nginx
+``` -->
 ## Service nginx
 ```bash
 docker run -d \
