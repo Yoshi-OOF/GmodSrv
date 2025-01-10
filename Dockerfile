@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
     gdb
 
 # Exposer les ports nécessaires
-EXPOSE 27015
+EXPOSE 27015/tcp
 EXPOSE 27015/udp
 EXPOSE 27005/udp
 
