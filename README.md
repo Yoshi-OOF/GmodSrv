@@ -13,6 +13,25 @@
 <!-- docker build -t nginx .
 docker run -d -p 8080:80 nginx -->
 
+## Service nginx
+```bash
+docker run -d \
+  --name nginx_container \
+  -p 80:80 \
+  -v "$(pwd)/conf/nginx.conf:/etc/nginx/nginx.conf:ro" \
+  -v "$(pwd)/html:/usr/share/nginx/html" \
+  --link php_container:php \
+  nginx:latest
+```
+
+## Service PHP (FPM)
+```bash
+docker run -d \
+  --name php_container \
+  -v "$(pwd)/html:/usr/share/nginx/html" \
+  php:8.2-fpm
+```
+
 ## Installation
 1. Cloner le dépôt.  
 2. Placer-vous dans le dossier contenant le `docker-compose.yml`.
