@@ -8,8 +8,7 @@ RUN apt-get update && dpkg --add-architecture i386
 
 RUN apt-get update && apt-get install -y \
     lib32gcc-s1 \
-    lib32stdc++6 \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+    lib32stdc++6
 
 # Exposer les ports nécessaires
 EXPOSE 27015
