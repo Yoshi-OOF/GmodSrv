@@ -11,12 +11,12 @@ class GmodServer {
     private $logFile;    
 
     /**
-     * Dans le constructeur, on utilise __DIR__ pour pointer vers le dossier où est ce script
+     * Dans le constructeur, on utilise ur pointer vers le dossier où est ce script
      * et éviter les soucis de chemin relatifs.
      */
     public function __construct() {
-        $this->serverPath = __DIR__ . '/srv';
-        $this->logFile    = __DIR__ . '/srv/garrysmod/console.log';
+        $this->serverPath = '/gmod';
+        $this->logFile    = '/gmod/garrysmod/console.log';
     }
 
     /**

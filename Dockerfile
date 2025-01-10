@@ -13,10 +13,11 @@ RUN chmod +x /gmod/srcds_run
 COPY /html /usr/share/nginx/html
 COPY /conf/nginx.conf /etc/nginx/nginx.conf
 
-# Script d'entrée
-# COPY ./docker-entrypoint.sh /docker-entrypoint.sh
+#si non fonction commenter
+# COPY ./docker-entrypoint.sh /docker-entrypoint.sh 
 # RUN chmod +x /docker-entrypoint.sh
 
 # Configuration des ports et commande par défaut
 # EXPOSE 80
+#si non fonction commenter
 # CMD ["/docker-entrypoint.sh"]
