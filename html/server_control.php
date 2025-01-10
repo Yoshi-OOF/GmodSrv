@@ -25,8 +25,7 @@ class GmodServer {
     public function start() {
         if (!$this->isRunning()) {
             // On exécute la commande srcds_run en tâche de fond et on récupère le PID
-            $cmd = "cd " . escapeshellarg($this->serverPath) 
-                 . " && ./srcds_run -game garrysmod +maxplayers 16 +map gm_construct >> "
+            $cmd = "/gmod/srcds_run -game garrysmod +maxplayers 16 +map gm_construct >> "
                  . escapeshellarg($this->logFile) . " 2>&1 & echo $!";
             
             exec($cmd, $output, $returnVar);
