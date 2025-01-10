@@ -11,7 +11,9 @@ services:
       - php
 
   php:
-    image: php:8.2-fpm
+    build:
+      context: .      # chemin vers le dossier contenant le Dockerfile
+      dockerfile: Dockerfile
     container_name: php_container
     volumes:
       - ./html:/usr/share/nginx/html
