@@ -11,6 +11,8 @@ RUN apt-get update && dpkg --add-architecture i386
 RUN apt-get update && apt-get install -y \
     lib32gcc-s1 \
     lib32stdc++6 \
+    libtinfo5:i386 \
+    libcurl4-gnutls-dev:i386 \
     gdb
 
 # Exposer les ports nécessaires
