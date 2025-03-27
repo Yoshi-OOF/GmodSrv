@@ -184,6 +184,55 @@
         .loading .fa-sync {
             display: none;
         }
+
+        /* Style pour la barre de commandes */
+        .console-input-container {
+            display: flex;
+            background-color: var(--console-bg);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0 0 8px 8px;
+            overflow: hidden;
+        }
+        
+        .console-input {
+            flex-grow: 1;
+            background-color: rgba(0, 0, 0, 0.3);
+            border: none;
+            color: var(--console-text);
+            font-family: 'Cascadia Code', 'Fira Code', monospace;
+            padding: 12px 15px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        
+        .console-input:focus {
+            background-color: rgba(0, 0, 0, 0.5);
+            box-shadow: inset 0 0 5px var(--primary-color);
+        }
+        
+        .console-submit {
+            background-color: var(--primary-color);
+            border: none;
+            color: white;
+            padding: 0 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .console-submit:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .console-submit:active {
+            transform: scale(0.95);
+        }
+        
+        /* Style pour l'historique des commandes */
+        .command-history {
+            font-style: italic;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
     </style>
 </head>
 <body>
@@ -229,6 +278,13 @@
                     </div>
                     <div class="card-body p-0">
                         <div class="console" id="console">Chargement de la console...</div>
+                        <div class="console-input-container">
+                            <input type="text" class="console-input" id="command-input" placeholder="Entrez une commande..." autocomplete="off">
+                            <button class="console-submit" onclick="sendCommand()">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                        <div class="px-3 py-2 command-history" id="command-history"></div>
                     </div>
                 </div>
             </div>
@@ -288,6 +344,8 @@
 
     <script>
         let autoscroll = true;
+        let commandHistory = [];
+        let historyIndex = -1;
         
         /**
          * Envoie une action au fichier server_control.php (start, stop, console, status).
@@ -443,6 +501,121 @@
         function showLogs() {
             showNotification('Fonctionnalité en développement');
         }
+
+        /**
+         * Envoie une commande au serveur
+         */
+        function sendCommand() {
+            const commandInput = document.getElementById('command-input');
+            const command = commandInput.value.trim();
+            
+            if (command === '') return;
+            
+            // Ajout à l'historique des commandes
+            commandHistory.unshift(command);
+            if (commandHistory.length > 10) commandHistory.pop();
+            historyIndex = -1;
+            updateCommandHistoryDisplay();
+            
+            // Feedback visuel
+            commandInput.value = '';
+            showNotification(`Commande envoyée: ${command}`);
+            
+            // Envoi de la commande au serveur
+            fetch('server_control.php', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: 'action=command&command=' + encodeURIComponent(command)
+            })
+            .then(response => response.json())
+            .then(data => {
+                refreshConsole();
+                if (data.error) {
+                    showNotification('Erreur: ' + data.error, true);
+                }
+            })
+            .catch(err => {
+                console.error('Erreur lors de l\'envoi de la commande:', err);
+                showNotification('Erreur de communication avec le serveur', true);
+            });
+        }
+        
+        /**
+         * Mise à jour de l'affichage de l'historique des commandes
+         */
+        function updateCommandHistoryDisplay() {
+            const historyElement = document.getElementById('command-history');
+            if (commandHistory.length === 0) {
+                historyElement.innerHTML = 'Aucune commande récente';
+                return;
+            }
+            
+            historyElement.innerHTML = 'Commandes récentes: ' + 
+                commandHistory.slice(0, 5).map(cmd => `<span class="command-item" onclick="useCommand('${cmd.replace(/'/g, "\\'")}')">${cmd}</span>`).join(' • ');
+        }
+        
+        /**
+         * Utilise une commande de l'historique
+         */
+        function useCommand(command) {
+            document.getElementById('command-input').value = command;
+        }
+        
+        /**
+         * Affiche une notification temporaire
+         */
+        function showNotification(message, isError = false) {
+            const notification = document.createElement('div');
+            notification.style.position = 'fixed';
+            notification.style.bottom = '20px';
+            notification.style.right = '20px';
+            notification.style.padding = '15px 20px';
+            notification.style.background = isError ? 'rgba(231, 76, 60, 0.9)' : 'rgba(0, 0, 0, 0.8)';
+            notification.style.color = 'white';
+            notification.style.borderRadius = '8px';
+            notification.style.zIndex = '9999';
+            notification.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.3)';
+            notification.style.transition = 'all 0.3s ease';
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+        
+        // Ajout de gestionnaires d'événements pour l'input de commande
+        document.addEventListener('DOMContentLoaded', function() {
+            const commandInput = document.getElementById('command-input');
+            
+            // Envoi de la commande avec Enter
+            commandInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    sendCommand();
+                } else if (e.key === 'ArrowUp') {
+                    // Navigation dans l'historique (haut)
+                    e.preventDefault();
+                    if (commandHistory.length > 0) {
+                        historyIndex = Math.min(historyIndex + 1, commandHistory.length - 1);
+                        commandInput.value = commandHistory[historyIndex];
+                    }
+                } else if (e.key === 'ArrowDown') {
+                    // Navigation dans l'historique (bas)
+                    e.preventDefault();
+                    if (historyIndex > 0) {
+                        historyIndex--;
+                        commandInput.value = commandHistory[historyIndex];
+                    } else if (historyIndex === 0) {
+                        historyIndex = -1;
+                        commandInput.value = '';
+                    }
+                }
+            });
+        });
 
         // Appels initiaux
         checkStatus();
